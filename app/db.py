@@ -2,7 +2,7 @@
 # @Author: Carlos Galeano
 # @Date:   2026-02-06 16:56:55
 # @Last Modified by:   Carlos Galeano
-# @Last Modified time: 2026-02-16 15:26:19
+# @Last Modified time: 2026-03-04 14:49:43
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ import os
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
+load_dotenv(dotenv_path="/app/.env", override=True)
 from sqlalchemy.ext.asyncio import (
     create_async_engine,
     async_sessionmaker,
@@ -20,15 +21,13 @@ from sqlalchemy.orm import declarative_base
 # 1) Cargar variables de entorno ANTES de usarlas
 load_dotenv()
 
-PG_USER = os.getenv("POSTGRES_USER", "root")
-PG_PASSWORD = os.getenv("POSTGRES_PASSWORD", "carlos")
-PG_DB = os.getenv("POSTGRES_DB", "tracking")
 
-# Si usas Docker Desktop en Windows/Mac, 'host.docker.internal' funciona.
-# En Linux, agrega --add-host=host.docker.internal:host-gateway al 'docker run'
-# o cambia a un nombre de servicio de la red docker (p. ej. 'postgres-1').
-PG_HOST = os.getenv("POSTGRES_HOST", "host.docker.internal")
-PG_PORT = os.getenv("POSTGRES_PORT", "5432")
+PG_USER = os.getenv("POSTGRES_USER")
+PG_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+PG_DB = os.getenv("POSTGRES_DB")
+PG_HOST = os.getenv("POSTGRES_HOST")
+PG_PORT = os.getenv("POSTGRES_PORT")
+
 
 # 2) URL asíncrona con asyncpg
 DATABASE_URL = f"postgresql+asyncpg://{PG_USER}:{PG_PASSWORD}@{PG_HOST}:{PG_PORT}/{PG_DB}"

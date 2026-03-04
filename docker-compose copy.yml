@@ -1,0 +1,28 @@
+# @Author: Carlos Galeano
+# @Date:   2026-02-06 15:11:57
+# @Last Modified by:   Carlos Galeano
+# @Last Modified time: 2026-02-20 14:12:23
+services:
+  api:
+    build: .
+    working_dir: /app
+    container_name: fastapi
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: /app
+      POSTGRES_HOST: db
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: appdb
+      POSTGRES_PORT: "5432"
+    ports:
+      - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    command: >
+      uvicorn paquete.main:app
+      --host 0.0.0.0
+      --port 8000
+      # En prod, mejor sin --reload salvo que montes el código
+      # --reload
+      # --reload-dir /app

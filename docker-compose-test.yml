@@ -1,0 +1,40 @@
+# @Author: Carlos Galeano
+# @Date:   2026-02-20 14:16:48
+# @Last Modified by:   Carlos Galeano
+# @Last Modified time: 2026-02-20 14:17:07
+services:
+  api:
+    build: .
+    working_dir: /app
+    container_name: fastapi
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: /app
+      POSTGRES_HOST: db
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: appdb
+      POSTGRES_PORT: "5432"
+    ports:
+      - "8000:8000"
+    command: >
+      uvicorn paquete.main:app
+      --host 0.0.0.0
+      --port 8000
+
+  api-dev:
+    profiles: ["dev"]
+    build: .
+    working_dir: /app
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    command: >
+      uvicorn paquete.main:app
+      --reload
+      --host 0.0.0.0
+      --port 8001

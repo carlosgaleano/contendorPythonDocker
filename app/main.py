@@ -2,13 +2,27 @@
 # @Author: Carlos Galeano
 # @Date:   2026-02-06 17:01:27
 # @Last Modified by:   Carlos Galeano
-# @Last Modified time: 2026-02-16 17:20:34
+# @Last Modified time: 2026-03-04 15:56:32
+
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select
+from sqlalchemy.exc import SQLAlchemyError
+
 from .db import engine, Base, get_session
+
 from .models import User
-from .schemas import UserIn, UserOut
+from .repositories import TrackingInfo3Repository
+from .schemas import (
+    UserIn,
+    UserOut,
+    TrackingInfo3Create,
+    TrackingInfo3Update,
+    TrackingInfo3,
+)
+
+#from .repositories import TrackingInfo3Repository
+
 
 app = FastAPI(title="FastAPI + Postgres (async)")
 
@@ -47,22 +61,15 @@ async def get_user(user_id: int, session: AsyncSession = Depends(get_session)):
 
 
 
-@app.post("/tracking", response_model=TrackingInfo3Out)
-async def create_tracking(
-    payload: TrackingInfo3Create,
-    session: AsyncSession = Depends(get_session),
-):
-    repo = TrackingInfo3Repository(session)
-    try:
-        obj = await repo.create(payload.model_dump(exclude_unset=True))
-        await session.commit()
-        await session.refresh(obj)
-        return obj
-    except SQLAlchemyError as e:
-        await session.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/tracking/{id_despacho}/{numero_guia}", response_model=TrackingInfo3Out)
+@app.get("/tracking", response_model=list[TrackingInfo3])
+async def list_tracking(limit: int = 10, offset: int = 0, session: AsyncSession = Depends(get_session)):
+    repo = TrackingInfo3Repository(session)
+    rows = await repo.list(limit=limit, offset=offset)
+    return rows
+
+
+@app.get("/tracking/{id_despacho}/{numero_guia}", response_model=TrackingInfo3)
 async def get_tracking(
     id_despacho: int,
     numero_guia: str,

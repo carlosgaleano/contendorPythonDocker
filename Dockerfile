@@ -21,7 +21,7 @@ COPY app ./app
 EXPOSE 8000
 
 # Concurrencia configurable (útil para benchmark)
-ENV WEB_CONCURRENCY=4
+#ENV WEB_CONCURRENCY=4
 
 # Uvicorn
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers ${WEB_CONCURRENCY}"]
